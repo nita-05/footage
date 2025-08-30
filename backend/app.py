@@ -59,7 +59,13 @@ def optimize_memory(func):
     return wrapper
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://footage-flow-frontend.vercel.app",
+    "https://*.vercel.app",
+    "https://*.onrender.com"
+], supports_credentials=True)
 
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
@@ -110,6 +116,14 @@ def ensure_users_table():
         conn.close()
     except Exception as e:
         print(f"ensure_users_table error: {str(e)}")
+
+@app.after_request
+def after_request(response):
+    """Add CORS headers to all responses"""
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 # Initialize SQLite database for metadata storage
 def init_database():
