@@ -7,7 +7,7 @@ try {
 } catch {}
 
 export const VITE_GOOGLE_CLIENT_ID =
-  localOverrideClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || '724469503053-4hlt6hvsttage9ii33hn4n7l1j59tnef.apps.googleusercontent.com';
+  localOverrideClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id_here';
 
 export const VITE_BACKEND_URL =
   localOverrideBackend || import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';

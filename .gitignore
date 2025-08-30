@@ -36,6 +36,7 @@ ENV/
 .env
 .env.local
 .env.production
+.env.template
 
 # Google Cloud credentials
 google-credentials.json
