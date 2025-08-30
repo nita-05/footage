@@ -15,9 +15,9 @@ max_requests_jitter = 50
 preload_app = True
 
 # Timeout settings
-timeout = 300  # 5 minutes for video processing
+timeout = 600  # 10 minutes for video processing
 keepalive = 2
-graceful_timeout = 30
+graceful_timeout = 60
 
 # Logging
 accesslog = "-"

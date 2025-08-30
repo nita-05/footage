@@ -64,8 +64,9 @@ CORS(app, origins=[
     "http://127.0.0.1:5173",
     "https://footage-flow-frontend.vercel.app",
     "https://*.vercel.app",
-    "https://*.onrender.com"
-], supports_credentials=True)
+    "https://*.onrender.com",
+    "*"
+], supports_credentials=True, methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
@@ -1942,15 +1943,17 @@ def transcribe_direct_video():
         print(f"🎬 Video file: {video_path}")
         print(f"🕐 Timestamp: {time.time()}")
         
+        # For 21-second videos, use a simple approach
         if WHISPER_MODEL:
             try:
+                # Use faster transcription settings
                 segments, info = WHISPER_MODEL.transcribe(
                     video_path,  # Transcribe video directly
-                    beam_size=5,  # Reduced from 25 for speed
-                    best_of=5,    # Reduced from 25 for speed
+                    beam_size=1,  # Minimal for speed
+                    best_of=1,    # Minimal for speed
                     temperature=0.0,
                     condition_on_previous_text=False,
-                    word_timestamps=True,
+                    word_timestamps=False,  # Disable for speed
                     vad_filter=False,
                     language="en"
                 )
