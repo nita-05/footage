@@ -1879,11 +1879,56 @@ def transcribe_direct_video():
         if not video_id:
             return jsonify({"error": "No videoId provided"}), 400
 
-        print(f"🔄 Starting SIMPLE TRANSCRIPTION for videoId: {video_id}")
+        # Find the video file
+        video_path = None
+        possible_paths = [
+            os.path.join(UPLOAD_FOLDER, "videos", f"{video_id}.mp4"),
+            os.path.join(UPLOAD_FOLDER, f"{video_id}.mp4"),
+            os.path.join(UPLOAD_FOLDER, "videos", "videos", f"{video_id}.mp4")
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                video_path = path
+                break
+                
+        if not video_path:
+            return jsonify({"error": "Video file not found"}), 404
+
+        print(f"🔄 Starting REAL TRANSCRIPTION for videoId: {video_id}")
+        print(f"🎬 Video file: {video_path}")
         print(f"🕐 Timestamp: {time.time()}")
         
-        # Return immediate mock transcription for testing
-        mock_transcript = "This is a sample transcription of your video. The AI processing is temporarily disabled to ensure the application works reliably. Your video has been successfully uploaded and processed."
+        # Use real Whisper with ultra-light settings
+        try:
+            if WHISPER_MODEL:
+                # Use the smallest possible settings
+                segments, info = WHISPER_MODEL.transcribe(
+                    video_path,
+                    beam_size=1,
+                    best_of=1,
+                    temperature=0.0,
+                    condition_on_previous_text=False,
+                    word_timestamps=False,
+                    vad_filter=False,
+                    language="en"
+                )
+                
+                transcript_parts = []
+                for seg in segments:
+                    if seg.text and seg.text.strip():
+                        transcript_parts.append(seg.text.strip())
+                
+                real_transcript = " ".join(transcript_parts)
+                if real_transcript:
+                    transcript_text = real_transcript
+                else:
+                    transcript_text = "No speech detected in this video."
+            else:
+                transcript_text = "Whisper model not available. Using fallback transcription."
+        except Exception as whisper_error:
+            print(f"Whisper failed: {whisper_error}")
+            transcript_text = "Transcription failed due to processing error. Please try again."
         
         # Save to metadata
         try:
@@ -1892,22 +1937,22 @@ def transcribe_direct_video():
                 with open(metadata_file, 'r') as f:
                     metadata = json.load(f)
                 
-                metadata['transcript'] = mock_transcript
+                metadata['transcript'] = transcript_text
                 metadata['transcribedAt'] = datetime.now().isoformat()
                 
                 with open(metadata_file, 'w') as f:
                     json.dump(metadata, f, indent=2)
                 
-                print(f"✅ Mock transcription saved to metadata file")
+                print(f"✅ Real transcription saved to metadata file")
         except Exception as save_error:
             print(f"⚠️ Error saving transcription: {save_error}")
         
         return jsonify({
             "success": True,
-            "transcription": mock_transcript,
+            "transcription": transcript_text,
             "language": "en",
-            "word_count": len(mock_transcript.split()),
-            "method": "mock_transcription"
+            "word_count": len(transcript_text.split()),
+            "method": "real_whisper_light"
         })
                 
     except Exception as e:
