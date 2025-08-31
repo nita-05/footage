@@ -442,7 +442,7 @@ def search_all_videos(query, user_id=None):
 # GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'footage-flow-468712')
 
 # Google Client ID for authentication (keep this for login)
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '724469503053-4hlt6hvsttage9ii33hn4n7l1j59tnef.apps.googleusercontent.com')
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', 'your_google_client_id_here')
 
 # Disable Google Cloud Services
 BUCKET_NAME = None
@@ -1355,14 +1355,7 @@ def requires_auth(f):
     
     return decorated_function
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'service': 'Footage Flow Backend'
-    })
+
 
 @app.route('/auth/google-signin', methods=['POST'])
 def google_signin():

@@ -16,9 +16,9 @@
 ```
 WHISPER_MODEL_SIZE=tiny.en
 WHISPER_COMPUTE_TYPE=int8
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
-GOOGLE_API_KEY=your_api_key
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_API_KEY=your_google_api_key_here
 ```
 
 ## Benefits:

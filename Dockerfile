@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     ffmpeg \
     bash \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
