@@ -11,7 +11,7 @@ import sqlite3
 import time
 from datetime import datetime
 import re
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, make_response
 from flask_cors import CORS
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -59,14 +59,8 @@ def optimize_memory(func):
     return wrapper
 
 app = Flask(__name__)
-CORS(app, origins=[
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://footage-flow-frontend.vercel.app",
-    "https://*.vercel.app",
-    "https://*.onrender.com",
-    "*"
-], supports_credentials=True, methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
+# Bulletproof CORS configuration
+CORS(app, origins="*", supports_credentials=False, methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
@@ -120,10 +114,22 @@ def ensure_users_table():
 
 @app.after_request
 def after_request(response):
-    """Add CORS headers to all responses"""
+    """Add bulletproof CORS headers to all responses"""
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'false')
+    response.headers.add('Access-Control-Max-Age', '86400')
+    return response
+
+@app.route('/transcribe-direct-video', methods=['OPTIONS'])
+def handle_options():
+    """Handle preflight OPTIONS requests"""
+    response = make_response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+    response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'false')
     return response
 
 # Initialize SQLite database for metadata storage
