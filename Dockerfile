@@ -19,6 +19,10 @@ COPY backend/ .
 # Create necessary directories
 RUN mkdir -p uploads/videos uploads/audio uploads/images uploads/renders tmp_frames
 
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV FLASK_ENV=production
+
 # Expose port
 EXPOSE 5000
 
