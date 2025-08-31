@@ -62,6 +62,11 @@ app = Flask(__name__)
 # Bulletproof CORS configuration
 CORS(app, origins="*", supports_credentials=False, methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for Railway"""
+    return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
+
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
 WHISPER_ENABLED = os.getenv('WHISPER_ENABLED', 'true').lower() == 'true'
