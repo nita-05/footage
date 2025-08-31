@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python311", "ffmpeg", "gcc", "gcc-unwrapped"]
+
+[phases.install]
+cmds = ["pip install -r backend/requirements-railway.txt"]
+
+[phases.build]
+cmds = ["mkdir -p backend/uploads/videos backend/uploads/audio backend/uploads/images backend/uploads/renders backend/tmp_frames"]
+
+[start]
+cmd = "cd backend && gunicorn --config gunicorn.conf.py --bind 0.0.0.0:$PORT app:app"
