@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements-railway.txt
 # Copy application code
 COPY backend/ .
 
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create necessary directories
 RUN mkdir -p uploads/videos uploads/audio uploads/images uploads/renders tmp_frames
 
@@ -31,4 +35,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
 
 # Start the application
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:app"]
+CMD ["/app/start.sh"]
